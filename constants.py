@@ -1,0 +1,2 @@
+RESPONSE_1 = "Thank you for texting, we'll get back to you shortly! \nPlease allow up to 3 minutes for a response. \nWhile you are waiting, have you asked your doctor questions about your medication such as \"How does my medicine work?\"\nIf you would like a list of more questions to ask your doctor, please reply YES."
+RESPONSE_2 = "What are the side effects of this medication?\nHow long until the medication starts to take effect?\nWill this medication interfere with anything?\nHow should I take this medicaiton?"
