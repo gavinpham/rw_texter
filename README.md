@@ -6,8 +6,10 @@ Requirements:
   - pip
       twilio
         $ pip install twilio
+        
       flask
         $ pip install flask
+        
   - ngrok
 
 Great reference from Twilio
