@@ -7,6 +7,8 @@ Requirements:
       > pip install twilio
 
       > pip install flask
+      
+      > pip install editdistance
         
   - ngrok
 
