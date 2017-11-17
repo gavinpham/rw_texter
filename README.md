@@ -4,12 +4,9 @@ Prototyped Texting Service for RefillWise
 Requirements:
   - python(2.7)
   - pip
-      
-      twilio
-        $ pip install twilio
-        
-      flask
-        $ pip install flask
+      > pip install twilio
+
+      > pip install flask
         
   - ngrok
 
