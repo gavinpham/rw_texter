@@ -8,17 +8,16 @@ from twilio.twiml.messaging_response import MessagingResponse
 app = Flask(__name__)
 
 def send_price(phoneNumber):
-	print "Waiting"
-	sleep(10)
-	print "Sending price"
-	account_sid = os.environ["TWILIO_ACCOUNT_SID"]
-	auth_token = os.environ["TWILIO_AUTH_TOKEN"]
+	sleep(constants.DELAY_IN_SECONDS)						##Automate a delayed response
+	account_sid = os.environ["TWILIO_ACCOUNT_SID"]			##From Twilio, stored in OS for security
+	auth_token = os.environ["TWILIO_AUTH_TOKEN"]			##From Twilio, stored in OS for security
+	account_phoneNumber = os.environ["TWILIO_PHONE_NUMBER"]	##From Twilio, stored in OS for security
 
 	client = Client(account_sid, auth_token)
 
 	client.messages.create(
 		to=phoneNumber,
-		from_="+12142144367",	##From Twilio
+		from_=account_phoneNumber,							
 		body=constants.PRICE_RESPONSE
 	)
 
@@ -38,12 +37,12 @@ def sms_reply():
 
 	
 	if editDistanceLipitor <= 6:
-		resp.message(constants.RESPONSE_1)	#Hardcoded response to 'Lipitor, 40 mg, 30 tablets'
+		resp.message(constants.RESPONSE_1)								#Hardcoded response to 'Lipitor, 40 mg, 30 tablets'
 		thread = Thread(target=send_price, args=(from_phoneNumber, ))	#Spin a separate thread to async send pricing info
 		thread.start()
 	elif body == "yes":
-		resp.message(constants.RESPONSE_2)	#Hardcoded response to 'YES'
-	#Any other input is disregarded
+		resp.message(constants.RESPONSE_2)								#Hardcoded response to 'YES'
+																		#Any other input is disregarded
 
 	return str(resp)
 
