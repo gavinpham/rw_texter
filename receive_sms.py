@@ -74,7 +74,7 @@ def sms_reply():
 		thread = Thread(target=delayed_response, args=(from_phoneNumber, ))	#Spin a separate thread to async send pricing info
 		thread.start()
 	elif body == "yes":
-		resp.message(constants.QUESTIONS_RESPONSE)
+		resp.message(constants.QUESTION_RESPONSE)
 
 	return str(resp)
 
