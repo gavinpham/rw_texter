@@ -28,7 +28,6 @@ def isPrescriptionQuantity(body):
 	return editDistancePrescriptionQuantity <= constants.STRICT_EDIT_DISTANCE or editDistancePrescriptionQuantityLong <= constants.STRICT_EDIT_DISTANCE
 
 def send_price(phoneNumber):
-	sleep(constants.DELAY_IN_SECONDS)									#Sleep for x seconds to simulate delayed human response
 	account_sid = os.environ["TWILIO_ACCOUNT_SID"]						#From Twilio, stored in OS for security
 	auth_token = os.environ["TWILIO_AUTH_TOKEN"]			
 	account_phoneNumber = os.environ["TWILIO_PHONE_NUMBER"]
@@ -41,7 +40,26 @@ def send_price(phoneNumber):
 		body=constants.PRICE_RESPONSE
 	)
 
-@app.route("/sms", methods=['GET', 'POST'])
+def send_card(phoneNumber):
+	account_sid = os.environ["TWILIO_ACCOUNT_SID"]						#From Twilio, stored in OS for security
+	auth_token = os.environ["TWILIO_AUTH_TOKEN"]			
+	account_phoneNumber = os.environ["TWILIO_PHONE_NUMBER"]
+
+	client = Client(account_sid, auth_token)
+
+	client.messages.create(
+		to=phoneNumber,
+		from_=account_phoneNumber,							
+		body=constants.CARD_RESPONSE,
+		media_url="https://i.imgur.com/XcaxuQC.jpg"
+	)
+
+def delayed_response(phoneNumber):
+	sleep(constants.DELAY_IN_SECONDS)									#Sleep for x seconds to simulate delayed human response
+	send_price(phoneNumber)
+	send_card(phoneNumber)
+
+@app.route("/sms", methods=['GET', 'POST'])								#If a SMS message comes into our number, execute this function:
 def sms_reply():
 	from_phoneNumber = str(request.form['From'])						#Retreive phone number from user
 	body = str(request.form['Body']).lower()							#Retreive body text sent from user
@@ -53,7 +71,7 @@ def sms_reply():
 		resp.message(constants.QUANTITY_ASK)
 	elif isFullPrescription(body) or isPrescriptionQuantity(body):
 		resp.message(constants.THANK_YOU_RESPONSE)
-		thread = Thread(target=send_price, args=(from_phoneNumber, ))	#Spin a separate thread to async send pricing info
+		thread = Thread(target=delayed_response, args=(from_phoneNumber, ))	#Spin a separate thread to async send pricing info
 		thread.start()
 	elif body == "yes":
 		resp.message(constants.QUESTIONS_RESPONSE)
