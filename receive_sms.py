@@ -9,23 +9,24 @@ app = Flask(__name__)
 
 def isFullPrescription(body):
 	#Calculate editdistance from body to accepted response
-	editDistancePrescriptionFull = editdistance.eval(body, constants.PRESCRIPTION_FULL)					# Lipitor, 40 mg, 30 tablets
-	editDistancePrescriptionFullLong = editdistance.eval(body, constants.PRESCRIPTION_FULL_LONG)		# Lipitor, 40 milligrams, 30 tablets
+	editDistancePrescriptionFull = editdistance.eval(body, constants.PRESCRIPTION_FULL)						# Lipitor, 40 mg, 30 tablets
+	editDistancePrescriptionFullLong = editdistance.eval(body, constants.PRESCRIPTION_FULL_LONG)			# Lipitor, 40 milligrams, 30 tablets
 	return editDistancePrescriptionFull <= constants.LENIENT_EDIT_DISTANCE
 
 def isPrescriptionName(body):
-	editDistancePrescriptionName = editdistance.eval(body, constants.PRESCRIPTION_NAME)					# Lipitor
+	editDistancePrescriptionName = editdistance.eval(body, constants.PRESCRIPTION_NAME)						# Lipitor
 	return editDistancePrescriptionName <= constants.STRICT_EDIT_DISTANCE
 
 def isPrescriptionDosage(body):
-	editDistancePrescriptionDosage = editdistance.eval(body, constants.PRESCRIPTION_DOSAGE)				# 40 mg
-	editDistancePrescriptionDosageLong = editdistance.eval(body, constants.PRESCRIPTION_DOSAGE_LONG)	# 40 milligrams
+	editDistancePrescriptionDosage = editdistance.eval(body, constants.PRESCRIPTION_DOSAGE)					# 40 mg
+	editDistancePrescriptionDosageLong = editdistance.eval(body, constants.PRESCRIPTION_DOSAGE_LONG)		# 40 milligrams
 	return editDistancePrescriptionDosage <= constants.STRICT_EDIT_DISTANCE or editDistancePrescriptionDosageLong <= constants.STRICT_EDIT_DISTANCE
 
 def isPrescriptionQuantity(body):
-	editDistancePrescriptionQuantity = editdistance.eval(body, constants.PRESCRIPTION_QUANTITY)			# 30 tabs
-	editDistancePrescriptionQuantityLong = editdistance.eval(body, constants.PRESCRIPTION_QUANTITY_LONG)# 30 tablets
-	return editDistancePrescriptionQuantity <= constants.STRICT_EDIT_DISTANCE or editDistancePrescriptionQuantityLong <= constants.STRICT_EDIT_DISTANCE
+	editDistancePrescriptionQuantity = editdistance.eval(body, constants.PRESCRIPTION_QUANTITY)				# 30 tabs
+	editDistancePrescriptionQuantityLong = editdistance.eval(body, constants.PRESCRIPTION_QUANTITY_LONG)	# 30 tablets
+	editDistancePrescriptionQuantityPills = editdistance.eval(body, constants.PRESCRIPTION_QUANTITY_PILLS)	# 30 pills
+	return editDistancePrescriptionQuantity <= constants.STRICT_EDIT_DISTANCE or editDistancePrescriptionQuantityLong <= constants.STRICT_EDIT_DISTANCE or editDistancePrescriptionQuantityPills <= constants.STRICT_EDIT_DISTANCE
 
 def send_price(phoneNumber):
 	account_sid = os.environ["TWILIO_ACCOUNT_SID"]						#From Twilio, stored in OS for security
@@ -41,7 +42,7 @@ def send_price(phoneNumber):
 	)
 
 def send_card(phoneNumber):
-	account_sid = os.environ["TWILIO_ACCOUNT_SID"]						#From Twilio, stored in OS for security
+	account_sid = os.environ["TWILIO_ACCOUNT_SID"]						
 	auth_token = os.environ["TWILIO_AUTH_TOKEN"]			
 	account_phoneNumber = os.environ["TWILIO_PHONE_NUMBER"]
 
@@ -55,9 +56,8 @@ def send_card(phoneNumber):
 	)
 
 def delayed_response(phoneNumber):
-	sleep(constants.DELAY_IN_SECONDS)									#Sleep for x seconds to simulate delayed human response
+	sleep(constants.DELAY_IN_SECONDS)									#Sleep for x seconds to simulate processing overhead
 	send_price(phoneNumber)
-	send_card(phoneNumber)
 
 @app.route("/sms", methods=['GET', 'POST'])								#If a SMS message comes into our number, execute this function:
 def sms_reply():
@@ -75,6 +75,10 @@ def sms_reply():
 		thread.start()
 	elif body == "yes":
 		resp.message(constants.QUESTION_RESPONSE)
+	elif body == "blue":
+		send_card(from_phoneNumber)
+	else:
+		resp.message(constants.UNRECOGNIZED_RESPONSE)
 
 	return str(resp)
 
