@@ -11,7 +11,7 @@ def isFullPrescription(body):
 	#Calculate editdistance from body to accepted response
 	editDistancePrescriptionFull = editdistance.eval(body, constants.PRESCRIPTION_FULL)						# Lipitor, 40 mg, 30 tablets
 	editDistancePrescriptionFullLong = editdistance.eval(body, constants.PRESCRIPTION_FULL_LONG)			# Lipitor, 40 milligrams, 30 tablets
-	return editDistancePrescriptionFull <= constants.LENIENT_EDIT_DISTANCE
+	return editDistancePrescriptionFull <= constants.LENIENT_EDIT_DISTANCE or editDistancePrescriptionFullLong <= constants.LENIENT_EDIT_DISTANCE
 
 def isPrescriptionName(body):
 	editDistancePrescriptionName = editdistance.eval(body, constants.PRESCRIPTION_NAME)						# Lipitor
