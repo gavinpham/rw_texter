@@ -41,6 +41,19 @@ def send_price(phoneNumber):
 		body=constants.PRICE_RESPONSE
 	)
 
+def send_follow_up(phoneNumber):
+	account_sid = os.environ["TWILIO_ACCOUNT_SID"]						
+	auth_token = os.environ["TWILIO_AUTH_TOKEN"]			
+	account_phoneNumber = os.environ["TWILIO_PHONE_NUMBER"]
+
+	client = Client(account_sid, auth_token)
+
+	client.messages.create(
+		to=phoneNumber,
+		from_=account_phoneNumber,							
+		body=constants.CARD_FOLLOW_UP,
+	)
+
 def send_card(phoneNumber):
 	account_sid = os.environ["TWILIO_ACCOUNT_SID"]						
 	auth_token = os.environ["TWILIO_AUTH_TOKEN"]			
@@ -58,6 +71,8 @@ def send_card(phoneNumber):
 def delayed_response(phoneNumber):
 	sleep(constants.DELAY_IN_SECONDS)									#Sleep for x seconds to simulate processing overhead
 	send_price(phoneNumber)
+	sleep(constants.RW_CARD_DELAY)
+	send_follow_up(phoneNumber)
 
 @app.route("/sms", methods=['GET', 'POST'])								#If a SMS message comes into our number, execute this function:
 def sms_reply():
